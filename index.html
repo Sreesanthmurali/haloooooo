@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AFTER HOUR PARTY • HOSTED BY D CARTEL | MIT</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=MedievalSharp&family=Special+Elite&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="horror-theme">
+
+  <!-- Atmospheric Background & Canvas Layers -->
+  <canvas id="particleCanvas"></canvas>
+  <div class="mansion-bg-layer"></div>
+  <div class="vignette-overlay"></div>
+  <div class="film-grain"></div>
+  <div id="lightningFlash" class="lightning-flash"></div>
+
+  <!-- JUMP SCARE CINEMATIC OVERLAY (HIDDEN UNTIL TRIGGERED) -->
+  <div id="jumpscareOverlay" class="jumpscare-overlay" onclick="dismissJumpscareAndRevealPoster()" aria-hidden="true">
+    <div class="jumpscare-strobe"></div>
+    <div class="jumpscare-blood-burst"></div>
+    
+    <div class="jumpscare-entity">
+      <!-- The Ghost Screamer that lunges right at user -->
+      <img src="assets/ghost.png" alt="Ghost Screamer Apparition" class="screamer-avatar screamer-ghost" id="screamerGhost">
+      
+      <!-- Razor Claw Slashes Tearing Screen -->
+      <div class="claw-scratches">
+        <div class="claw-line c1"></div>
+        <div class="claw-line c2"></div>
+        <div class="claw-line c3"></div>
+        <div class="claw-line c4"></div>
+      </div>
+    </div>
+
+    <div class="screamer-tagline">AFTER HOUR PARTY</div>
+    <div class="screamer-touch-prompt">[TOUCH SCREEN TO ENTER]</div>
+  </div>
+
+  <!-- Mobile-First Header Bar -->
+  <header class="experience-header">
+    <div class="brand-crest">
+      <span class="crest-college">MIT</span>
+      <span class="crest-divider">✕</span>
+      <div class="crest-dcartel">
+        <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-header-logo">
+        <span class="crest-brand-name">D CARTEL</span>
+      </div>
+    </div>
+    
+    <div class="header-controls">
+      <button id="soundToggleBtn" class="control-btn" title="Toggle Sound" aria-label="Toggle Sound">
+        <span class="btn-icon">🔊</span>
+        <span class="btn-label">SOUND</span>
+      </button>
+      <button id="fullscreenToggleBtn" class="control-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+        <span class="btn-icon">⛶</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Atmospheric Props Floating in Scene -->
+  <div class="scene-prop prop-lantern">
+    <img src="assets/lantern.png" alt="Gothic Lantern" class="lantern-img">
+    <div class="lantern-light-glow"></div>
+  </div>
+
+  <div class="scene-prop prop-raven">
+    <img src="assets/raven.png" alt="Raven" class="raven-img">
+  </div>
+
+  <!-- MAIN RITUAL CONTAINER -->
+  <main class="ritual-container">
+
+    <!-- ==============================================
+         STAGE 1: NAME INTERROGATION
+         ============================================== -->
+    <section id="stage-name" class="ritual-stage active">
+      <div class="gothic-card">
+        
+        <div class="card-skull-header">
+          <img src="assets/skull_roses.png" alt="Skull with black candle" class="skull-roses-img">
+        </div>
+
+        <div class="dcartel-badge-row">
+          <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-inline-logo">
+          <span class="dcartel-badge-text">HOSTED BY D CARTEL</span>
+        </div>
+
+        <div class="card-eyebrow">MAHAGURU INSTITUTE OF TECHNOLOGY</div>
+        <h1 class="horror-title flicker-slow">AFTER HOUR PARTY</h1>
+        <p class="horror-subtitle">A cold mist settles across campus. The seminar hall doors await.</p>
+
+        <form id="nameForm" class="ritual-form" onsubmit="event.preventDefault(); proceedToIdStage();">
+          <label for="juniorName" class="input-prompt">
+            <span class="prompt-blood">†</span>
+            <span class="typewriter-text" id="namePromptText">What's your name, junior?</span>
+          </label>
+          
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="juniorName" 
+              class="horror-input" 
+              placeholder="Enter your name..." 
+              autocomplete="name" 
+              maxlength="32" 
+              required 
+              autofocus
+            >
+            <span class="input-glow"></span>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" id="btnSubmitName" class="blood-btn">
+              <span class="btn-text">CARVE NAME</span>
+              <span class="btn-slash"></span>
+            </button>
+          </div>
+        </form>
+
+        <div class="card-footer-quote">
+          <div class="footer-dcartel-tag">
+            <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-tiny-logo">
+            <span>D CARTEL • MIT SEMINAR HALL • 28.10.2026</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         STAGE 2: ID / ROLL NUMBER VERIFICATION
+         ============================================== -->
+    <section id="stage-id" class="ritual-stage">
+      <div class="gothic-card card-wide">
+        
+        <div class="split-stage-layout">
+          
+          <!-- Potion bottle with live dynamic label -->
+          <div class="potion-display-col">
+            <div class="potion-wrapper">
+              <img src="assets/potion_bottle.png" alt="Cursed Potion" class="potion-img" id="potionBottleImg">
+              
+              <!-- Dynamic Parchment Label written in ink -->
+              <div class="potion-label-content">
+                <div class="label-dcartel-header">
+                  <img src="assets/cartel_logo.png" alt="D Cartel" class="label-dcartel-logo">
+                  <span>D CARTEL PASS</span>
+                </div>
+                <div class="label-name" id="labelJuniorName">JUNIOR</div>
+                <div class="label-id" id="labelRollNumber">ROLL NO: ---</div>
+                <div class="label-sub">MIT • 28.10.2026</div>
+                <div class="label-blood-seal">🩸</div>
+              </div>
+
+              <div class="potion-glow-aura"></div>
+            </div>
+
+            <div class="potion-caption">
+              <span class="pulse-dot"></span> Bloodbound Ticket Artifact
+            </div>
+          </div>
+
+          <!-- Prompt & ID input -->
+          <div class="id-form-col">
+            <div class="id-header-lockup">
+              <div class="prop-hand-container">
+                <img src="assets/skeleton_hand.png" alt="Skeletal hand" class="skeleton-hand-img">
+              </div>
+              <div class="dcartel-badge-row mini-badge">
+                <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-inline-logo">
+                <span>HOSTED BY D CARTEL</span>
+              </div>
+            </div>
+
+            <h2 class="horror-title-secondary">
+              Welcome, <span id="displayNamePlaceholder" class="highlight-crimson">Junior</span>...
+            </h2>
+            <p class="horror-subtitle">The gatekeeper demands proof of your enrollment before the reveal.</p>
+
+            <form id="idForm" class="ritual-form" onsubmit="event.preventDefault(); proceedToPresentsStage();">
+              <label for="rollNumber" class="input-prompt">
+                <span class="prompt-blood">†</span>
+                <span id="idPromptText">Show your ID (Roll Number):</span>
+              </label>
+              
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  id="rollNumber" 
+                  class="horror-input" 
+                  placeholder="e.g. VPE24CS042 or VPE23ME015" 
+                  autocomplete="off" 
+                  maxlength="20" 
+                  required
+                >
+                <span class="input-glow"></span>
+              </div>
+              <div class="roll-hint">Format: vpeXXcs/ds/me/XXX</div>
+
+              <div class="button-group">
+                <button type="submit" id="btnSubmitId" class="blood-btn">
+                  <span class="btn-text">SEAL IN BLOOD</span>
+                  <span class="btn-slash"></span>
+                </button>
+                <button type="button" class="ghost-btn" onclick="backToNameStage()">
+                  ← CHANGE NAME
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================================
+         STAGE 3: D CARTEL PRESENTS (CINEMATIC REVEAL)
+         ============================================== -->
+    <section id="stage-presents" class="ritual-stage stage-cinema">
+      <div class="cinema-smoke-vortex"></div>
+      
+      <div class="cinema-content">
+        
+        <div class="cartel-logo-hero" id="cartelLogoHero">
+          <div class="dcartel-title-eyebrow">
+            <span class="blood-dagger-sigil">⚔</span> D CARTEL <span class="blood-dagger-sigil">⚔</span>
+          </div>
+
+          <!-- D Cartel Logo: Coiled Dragon around Dagger Sword -->
+          <div class="dragon-sword-frame">
+            <img src="assets/cartel_logo.png" alt="D CARTEL Logo" class="cartel-dragon-img">
+            <div class="cartel-blade-shine"></div>
+          </div>
+        </div>
+
+        <!-- PRESENTS animated expanding banner -->
+        <div class="cinema-presents-banner" id="presentsBanner">
+          <span class="letter-present">P</span>
+          <span class="letter-present">R</span>
+          <span class="letter-present">E</span>
+          <span class="letter-present">S</span>
+          <span class="letter-present">E</span>
+          <span class="letter-present">N</span>
+          <span class="letter-present">T</span>
+          <span class="letter-present">S</span>
+        </div>
+
+        <div class="cinema-subtext" id="cinemaSubtext">
+          <p class="fade-tagline">MAHAGURU INSTITUTE OF TECHNOLOGY</p>
+          <div class="cinema-countdown-bar"><div class="countdown-fill"></div></div>
+        </div>
+
+        <button id="skipCinemaBtn" class="cinema-skip-btn" onclick="triggerJumpScare()">
+          TOUCH TO REVEAL ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         STAGE 4: THE GRAND POSTER REVEAL (FULLSCREEN -> SCROLL)
+         ============================================== -->
+    <section id="stage-poster" class="ritual-stage stage-poster-layout">
+      
+      <!-- HERO FULLSCREEN POSTER VIEW -->
+      <div class="poster-fullscreen-hero">
+        
+        <!-- Top Announcement Bar with Sleek Flashlight Icon Toggle -->
+        <div class="reveal-top-bar">
+          <div class="reveal-status-pill">
+            <span class="status-indicator"></span>
+            <div class="dcartel-inline-authorizer">
+              <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-inline-logo">
+              <span>HOSTED BY <strong>D CARTEL</strong> • GUEST: <strong id="admitGuestName">JUNIOR</strong> (<span id="admitGuestId">VPE24CS042</span>)</span>
+            </div>
+          </div>
+
+          <!-- Pure Sleek Flashlight Icon Toggle Button -->
+          <button id="flashlightIconBtn" class="flashlight-icon-btn active" title="Toggle Flashlight Spotlight" aria-label="Toggle Flashlight">
+            <svg class="flashlight-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 2h12v3l-2 3v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8L6 5V2zm2 2v1h8V4H8zm1 4.5V20h6V8.5l1.67-2.5H7.33L9 8.5zM11 11h2v3h-2v-3z"/>
+              <path class="beam-ray ray-left" d="M3 1l2 2-1 1-2-2 1-1z"/>
+              <path class="beam-ray ray-center" d="M11 0h2v3h-2V0z"/>
+              <path class="beam-ray ray-right" d="M19 1l1 1-2 2-1-1 2-2z"/>
+            </svg>
+            <span class="flashlight-pulse-dot"></span>
+          </button>
+        </div>
+
+        <!-- Fullscreen Hero Poster Container -->
+        <div class="poster-hero-container">
+          <div class="poster-interactive-frame" id="posterFrame">
+            <!-- Flashlight Canvas overlay -->
+            <canvas id="flashlightCanvas" class="flashlight-canvas"></canvas>
+            
+            <img 
+              src="assets/poster.png" 
+              alt="After Hour Party Vintage Horror Poster - Hosted by D CARTEL at MIT Mahaguru Institute of Technology" 
+              class="vintage-poster-img"
+              id="mainPosterImg"
+            >
+
+            <!-- Slasher Click Hotspots & Easter Eggs -->
+            <div class="slasher-hotspots">
+              <button class="hotspot hotspot-freddy" onclick="triggerSlasherQuote('freddy')" title="Freddy Krueger" aria-label="Freddy Krueger"></button>
+              <button class="hotspot hotspot-jason" onclick="triggerSlasherQuote('jason')" title="Jason Voorhees" aria-label="Jason Voorhees"></button>
+              <button class="hotspot hotspot-michael" onclick="triggerSlasherQuote('michael')" title="Michael Myers" aria-label="Michael Myers"></button>
+              <button class="hotspot hotspot-ghostface" onclick="triggerSlasherQuote('ghostface')" title="Ghostface" aria-label="Ghostface"></button>
+              <button class="hotspot hotspot-chucky" onclick="triggerSlasherQuote('chucky')" title="Chucky" aria-label="Chucky"></button>
+            </div>
+
+            <!-- Creepy Slasher Quote Float Overlay -->
+            <div id="slasherQuoteBox" class="slasher-quote-toast">
+              <span class="quote-icon">🔪</span>
+              <span class="quote-text" id="slasherQuoteText"></span>
+            </div>
+
+            <!-- Mobile Touch Hint -->
+            <div class="flashlight-touch-hint">
+              <span class="hint-icon">🔦</span> Move to aim flashlight
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Down Call-To-Action Pill -->
+        <div class="scroll-prompt-container">
+          <button class="scroll-down-pill" onclick="scrollToDetails()">
+            <span>SCROLL FOR VIP TICKET & PASS DETAILS</span>
+            <span class="scroll-arrow">↓</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- BELOW-THE-FOLD SCROLLABLE SECTION: VIP PASS SLIP & EVENT DETAILS -->
+      <div id="scrollDetailsSection" class="poster-scroll-details">
+        
+        <div class="details-cards-grid">
+          
+          <!-- Official Event Dossier -->
+          <div class="dossier-card">
+            <div class="dossier-header-brand">
+              <img src="assets/cartel_logo.png" alt="D Cartel" class="dossier-dcartel-logo">
+              <div class="dossier-badge">OFFICIAL EVENT DOSSIER</div>
+            </div>
+
+            <h3 class="dossier-title">AFTER HOUR PARTY</h3>
+            <p class="dossier-org">MAHAGURU INSTITUTE OF TECHNOLOGY</p>
+
+            <div class="event-meta-grid">
+              <div class="meta-item">
+                <div class="meta-icon">📅</div>
+                <div class="meta-content">
+                  <span class="meta-label">DATE</span>
+                  <span class="meta-value">28 . 10 . 2026</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">📍</div>
+                <div class="meta-content">
+                  <span class="meta-label">VENUE</span>
+                  <span class="meta-value">SEMINAR HALL</span>
+                </div>
+              </div>
+
+              <div class="meta-item meta-item-full">
+                <div class="meta-icon">⚔</div>
+                <div class="meta-content">
+                  <span class="meta-label">HOSTED BY</span>
+                  <div class="dcartel-authorizer-lockup">
+                    <img src="assets/cartel_logo.png" alt="D Cartel" class="meta-dcartel-inline">
+                    <span class="meta-value highlight-host">D CARTEL</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personalized VIP Hall Pass Download Slip -->
+          <div class="vip-pass-card" id="vipPassCard">
+            <div class="pass-header">
+              <div class="pass-brand-lockup">
+                <img src="assets/cartel_logo.png" alt="D Cartel" class="pass-dcartel-logo">
+                <span class="pass-tag">HOSTED BY D CARTEL</span>
+              </div>
+              <span class="pass-stamp">CONFIRMED</span>
+            </div>
+
+            <div class="pass-body">
+              <div class="pass-row">
+                <span class="pk">ATTENDEE:</span>
+                <span class="pv highlight" id="ticketAttendee">JUNIOR</span>
+              </div>
+              <div class="pass-row">
+                <span class="pk">COLLEGE ID:</span>
+                <span class="pv" id="ticketRoll">VPE24CS042</span>
+              </div>
+              <div class="pass-row">
+                <span class="pk">DATE:</span>
+                <span class="pv">28.10.2026</span>
+              </div>
+              <div class="pass-row">
+                <span class="pk">VENUE:</span>
+                <span class="pv">SEMINAR HALL</span>
+              </div>
+            </div>
+
+            <div class="pass-barcode">
+              <div class="barcode-lines"></div>
+              <span class="barcode-num" id="ticketBarcodeNum">MIT-DCARTEL-VPE24CS042</span>
+            </div>
+
+            <button class="blood-btn pass-action-btn" onclick="generateAndDownloadPass()">
+              <span class="btn-text">📥 DOWNLOAD VIP TICKET SLIP</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Replay Ritual Button -->
+        <div class="replay-button-row">
+          <button class="ghost-btn replay-btn" onclick="restartExperience()">
+            <span>↻ RELIVE THE RITUAL</span>
+          </button>
+        </div>
+
+        <!-- Atmospheric Pumpkins & Footer Lockup -->
+        <div class="reveal-pumpkins-row">
+          <div class="pumpkin-item">
+            <img src="assets/pumpkin_evil.png" alt="Sinister Jack-o'-Lantern" class="pumpkin-img">
+          </div>
+          <div class="pumpkin-center-sigil">
+            <div class="dcartel-footer-lockup">
+              <img src="assets/cartel_logo.png" alt="D Cartel" class="pumpkin-dcartel-logo">
+              <span>HOSTED BY D CARTEL • AFTER HOUR PARTY • 28.10.2026</span>
+            </div>
+          </div>
+          <div class="pumpkin-item">
+            <img src="assets/pumpkin_moth.png" alt="Jack-o'-Lantern with Moth" class="pumpkin-img">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Hidden High-Res Canvas for Pass Generation -->
+  <canvas id="ticketExportCanvas" width="920" height="500" style="display:none;"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
