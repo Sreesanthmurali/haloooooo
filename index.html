@@ -145,8 +145,29 @@
           <!-- Potion bottle with live dynamic label -->
           <div class="potion-display-col">
             <div class="potion-wrapper">
+              <!-- Internal Glowing Liquid Blood Core -->
+              <div class="bottle-blood-core"></div>
+              
               <img src="assets/potion_bottle.png" alt="Cursed Potion" class="potion-img" id="potionBottleImg">
               
+              <!-- Oozing Blood Layers (Glass surface & drips) -->
+              <div class="blood-ooze-overlay">
+                <!-- Viscous streams creeping down bottle neck & shoulders -->
+                <div class="ooze-stream stream-cork-center"></div>
+                <div class="ooze-stream stream-left-shoulder"></div>
+                <div class="ooze-stream stream-right-shoulder"></div>
+                <div class="ooze-stream stream-label-side"></div>
+                
+                <!-- Animated falling blood droplets -->
+                <div class="oozing-droplet drop-left"></div>
+                <div class="oozing-droplet drop-right"></div>
+                <div class="oozing-droplet drop-cork"></div>
+
+                <!-- Wet blood splatters on parchment label -->
+                <div class="blood-splatter splatter-top-right"></div>
+                <div class="blood-splatter splatter-bottom-left"></div>
+              </div>
+
               <!-- Dynamic Parchment Label written in ink -->
               <div class="potion-label-content">
                 <div class="label-dcartel-header">
@@ -264,196 +285,25 @@
     </section>
 
     <!-- ==============================================
-         STAGE 4: THE GRAND POSTER REVEAL (FULLSCREEN -> SCROLL)
+         STAGE 4: THE GRAND POSTER REVEAL (FULLSCREEN AS IT IS)
          ============================================== -->
-    <section id="stage-poster" class="ritual-stage stage-poster-layout">
-      
-      <!-- HERO FULLSCREEN POSTER VIEW -->
-      <div class="poster-fullscreen-hero">
-        
-        <!-- Top Announcement Bar with Sleek Flashlight Icon Toggle -->
-        <div class="reveal-top-bar">
-          <div class="reveal-status-pill">
-            <span class="status-indicator"></span>
-            <div class="dcartel-inline-authorizer">
-              <img src="assets/cartel_logo.png" alt="D Cartel" class="dcartel-inline-logo">
-              <span>HOSTED BY <strong>D CARTEL</strong> • GUEST: <strong id="admitGuestName">JUNIOR</strong> (<span id="admitGuestId">VPE24CS042</span>)</span>
-            </div>
-          </div>
-
-          <!-- Pure Sleek Flashlight Icon Toggle Button -->
-          <button id="flashlightIconBtn" class="flashlight-icon-btn active" title="Toggle Flashlight Spotlight" aria-label="Toggle Flashlight">
-            <svg class="flashlight-svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 2h12v3l-2 3v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8L6 5V2zm2 2v1h8V4H8zm1 4.5V20h6V8.5l1.67-2.5H7.33L9 8.5zM11 11h2v3h-2v-3z"/>
-              <path class="beam-ray ray-left" d="M3 1l2 2-1 1-2-2 1-1z"/>
-              <path class="beam-ray ray-center" d="M11 0h2v3h-2V0z"/>
-              <path class="beam-ray ray-right" d="M19 1l1 1-2 2-1-1 2-2z"/>
-            </svg>
-            <span class="flashlight-pulse-dot"></span>
-          </button>
-        </div>
-
-        <!-- Fullscreen Hero Poster Container -->
-        <div class="poster-hero-container">
-          <div class="poster-interactive-frame" id="posterFrame">
-            <!-- Flashlight Canvas overlay -->
-            <canvas id="flashlightCanvas" class="flashlight-canvas"></canvas>
-            
-            <img 
-              src="assets/poster.png" 
-              alt="After Hour Party Vintage Horror Poster - Hosted by D CARTEL at MIT Mahaguru Institute of Technology" 
-              class="vintage-poster-img"
-              id="mainPosterImg"
-            >
-
-            <!-- Slasher Click Hotspots & Easter Eggs -->
-            <div class="slasher-hotspots">
-              <button class="hotspot hotspot-freddy" onclick="triggerSlasherQuote('freddy')" title="Freddy Krueger" aria-label="Freddy Krueger"></button>
-              <button class="hotspot hotspot-jason" onclick="triggerSlasherQuote('jason')" title="Jason Voorhees" aria-label="Jason Voorhees"></button>
-              <button class="hotspot hotspot-michael" onclick="triggerSlasherQuote('michael')" title="Michael Myers" aria-label="Michael Myers"></button>
-              <button class="hotspot hotspot-ghostface" onclick="triggerSlasherQuote('ghostface')" title="Ghostface" aria-label="Ghostface"></button>
-              <button class="hotspot hotspot-chucky" onclick="triggerSlasherQuote('chucky')" title="Chucky" aria-label="Chucky"></button>
-            </div>
-
-            <!-- Creepy Slasher Quote Float Overlay -->
-            <div id="slasherQuoteBox" class="slasher-quote-toast">
-              <span class="quote-icon">🔪</span>
-              <span class="quote-text" id="slasherQuoteText"></span>
-            </div>
-
-            <!-- Mobile Touch Hint -->
-            <div class="flashlight-touch-hint">
-              <span class="hint-icon">🔦</span> Move to aim flashlight
-            </div>
-          </div>
-        </div>
-
-        <!-- Scroll Down Call-To-Action Pill -->
-        <div class="scroll-prompt-container">
-          <button class="scroll-down-pill" onclick="scrollToDetails()">
-            <span>SCROLL FOR VIP TICKET & PASS DETAILS</span>
-            <span class="scroll-arrow">↓</span>
-          </button>
-        </div>
-
+    <section id="stage-poster" class="ritual-stage stage-poster-fullscreen">
+      <div class="poster-fullscreen-container">
+        <img 
+          src="assets/poster.png" 
+          alt="After Hour Party - Hosted by D CARTEL at MIT Mahaguru Institute of Technology" 
+          class="poster-fullscreen-img"
+          id="mainPosterImg"
+        >
       </div>
 
-      <!-- BELOW-THE-FOLD SCROLLABLE SECTION: VIP PASS SLIP & EVENT DETAILS -->
-      <div id="scrollDetailsSection" class="poster-scroll-details">
-        
-        <div class="details-cards-grid">
-          
-          <!-- Official Event Dossier -->
-          <div class="dossier-card">
-            <div class="dossier-header-brand">
-              <img src="assets/cartel_logo.png" alt="D Cartel" class="dossier-dcartel-logo">
-              <div class="dossier-badge">OFFICIAL EVENT DOSSIER</div>
-            </div>
-
-            <h3 class="dossier-title">AFTER HOUR PARTY</h3>
-            <p class="dossier-org">MAHAGURU INSTITUTE OF TECHNOLOGY</p>
-
-            <div class="event-meta-grid">
-              <div class="meta-item">
-                <div class="meta-icon">📅</div>
-                <div class="meta-content">
-                  <span class="meta-label">DATE</span>
-                  <span class="meta-value">28 . 10 . 2026</span>
-                </div>
-              </div>
-
-              <div class="meta-item">
-                <div class="meta-icon">📍</div>
-                <div class="meta-content">
-                  <span class="meta-label">VENUE</span>
-                  <span class="meta-value">SEMINAR HALL</span>
-                </div>
-              </div>
-
-              <div class="meta-item meta-item-full">
-                <div class="meta-icon">⚔</div>
-                <div class="meta-content">
-                  <span class="meta-label">HOSTED BY</span>
-                  <div class="dcartel-authorizer-lockup">
-                    <img src="assets/cartel_logo.png" alt="D Cartel" class="meta-dcartel-inline">
-                    <span class="meta-value highlight-host">D CARTEL</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Personalized VIP Hall Pass Download Slip -->
-          <div class="vip-pass-card" id="vipPassCard">
-            <div class="pass-header">
-              <div class="pass-brand-lockup">
-                <img src="assets/cartel_logo.png" alt="D Cartel" class="pass-dcartel-logo">
-                <span class="pass-tag">HOSTED BY D CARTEL</span>
-              </div>
-              <span class="pass-stamp">CONFIRMED</span>
-            </div>
-
-            <div class="pass-body">
-              <div class="pass-row">
-                <span class="pk">ATTENDEE:</span>
-                <span class="pv highlight" id="ticketAttendee">JUNIOR</span>
-              </div>
-              <div class="pass-row">
-                <span class="pk">COLLEGE ID:</span>
-                <span class="pv" id="ticketRoll">VPE24CS042</span>
-              </div>
-              <div class="pass-row">
-                <span class="pk">DATE:</span>
-                <span class="pv">28.10.2026</span>
-              </div>
-              <div class="pass-row">
-                <span class="pk">VENUE:</span>
-                <span class="pv">SEMINAR HALL</span>
-              </div>
-            </div>
-
-            <div class="pass-barcode">
-              <div class="barcode-lines"></div>
-              <span class="barcode-num" id="ticketBarcodeNum">MIT-DCARTEL-VPE24CS042</span>
-            </div>
-
-            <button class="blood-btn pass-action-btn" onclick="generateAndDownloadPass()">
-              <span class="btn-text">📥 DOWNLOAD VIP TICKET SLIP</span>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- Replay Ritual Button -->
-        <div class="replay-button-row">
-          <button class="ghost-btn replay-btn" onclick="restartExperience()">
-            <span>↻ RELIVE THE RITUAL</span>
-          </button>
-        </div>
-
-        <!-- Atmospheric Pumpkins & Footer Lockup -->
-        <div class="reveal-pumpkins-row">
-          <div class="pumpkin-item">
-            <img src="assets/pumpkin_evil.png" alt="Sinister Jack-o'-Lantern" class="pumpkin-img">
-          </div>
-          <div class="pumpkin-center-sigil">
-            <div class="dcartel-footer-lockup">
-              <img src="assets/cartel_logo.png" alt="D Cartel" class="pumpkin-dcartel-logo">
-              <span>HOSTED BY D CARTEL • AFTER HOUR PARTY • 28.10.2026</span>
-            </div>
-          </div>
-          <div class="pumpkin-item">
-            <img src="assets/pumpkin_moth.png" alt="Jack-o'-Lantern with Moth" class="pumpkin-img">
-          </div>
-        </div>
-
-      </div>
+      <!-- Floating Discreet Replay Pill -->
+      <button class="poster-replay-pill" onclick="restartExperience()" title="Relive Ritual">
+        <span>↻ REPLAY</span>
+      </button>
     </section>
 
   </main>
-
-  <!-- Hidden High-Res Canvas for Pass Generation -->
-  <canvas id="ticketExportCanvas" width="920" height="500" style="display:none;"></canvas>
 
   <script src="script.js"></script>
 </body>

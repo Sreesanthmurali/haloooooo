@@ -12,11 +12,16 @@ const state = {
   soundEnabled: true,
   audioContext: null,
   droneGain: null,
-  flashlightActive: true,
-  cursor: { x: 0, y: 0, isInside: false },
-  presentsTimer: null,
-  isZoomed: false
+  presentsTimer: null
 };
+
+// Audio Tracks requested by user
+const jumpscareAudio = new Audio('assets/insidious_title.mp3');
+jumpscareAudio.preload = 'auto';
+
+const posterSongAudio = new Audio('assets/soulfuljamtracks-spooky-halloween-586106.mp3');
+posterSongAudio.preload = 'auto';
+posterSongAudio.loop = true;
 
 // ==========================================================================
 // 1. PROCEDURAL WEB AUDIO SYNTHESIZER (ZERO EXTERNAL ASSETS NEEDED)
@@ -330,11 +335,18 @@ function toggleSound() {
   if (state.soundEnabled) {
     icon.textContent = '🔊';
     label.textContent = 'SOUND: ON';
-    startHorrorDrone();
-    playBladeSlash();
+    const posterStage = document.getElementById('stage-poster');
+    if (posterStage && posterStage.classList.contains('active')) {
+      posterSongAudio.play().catch(e => console.warn(e));
+    } else {
+      startHorrorDrone();
+      playBladeSlash();
+    }
   } else {
     icon.textContent = '🔇';
     label.textContent = 'SOUND: OFF';
+    posterSongAudio.pause();
+    jumpscareAudio.pause();
     if (state.droneGain && state.audioContext) {
       state.droneGain.gain.setValueAtTime(0, state.audioContext.currentTime);
       state.droneGain = null;
@@ -423,11 +435,17 @@ function proceedToIdStage() {
   startHorrorDrone();
   playBladeSlash();
 
+  // Preload audio files on user gesture
+  try {
+    jumpscareAudio.load();
+    posterSongAudio.load();
+  } catch (e) {}
+
   // Update dynamic placeholders across the app
-  document.getElementById('displayNamePlaceholder').textContent = name;
-  document.getElementById('labelJuniorName').textContent = name.toUpperCase();
-  document.getElementById('ticketAttendee').textContent = name.toUpperCase();
-  document.getElementById('admitGuestName').textContent = name.toUpperCase();
+  const dispName = document.getElementById('displayNamePlaceholder');
+  if (dispName) dispName.textContent = name;
+  const lblName = document.getElementById('labelJuniorName');
+  if (lblName) lblName.textContent = name.toUpperCase();
 
   // Switch Stages with visual transition
   document.getElementById('stage-name').classList.remove('active');
@@ -455,7 +473,9 @@ rollInput.addEventListener('input', (e) => {
   let val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   e.target.value = val;
   const labelRoll = document.getElementById('labelRollNumber');
-  labelRoll.textContent = val ? `ROLL NO: ${val}` : 'ROLL NO: ---';
+  if (labelRoll) {
+    labelRoll.textContent = val ? `ROLL NO: ${val}` : 'ROLL NO: ---';
+  }
 });
 
 // Stage 2 -> Stage 3: Junior enters Roll Number -> DCARTEL PRESENTS
@@ -467,9 +487,12 @@ function proceedToPresentsStage() {
   }
 
   state.rollNumber = rollVal.toUpperCase();
-  document.getElementById('ticketRoll').textContent = state.rollNumber;
-  document.getElementById('admitGuestId').textContent = state.rollNumber;
-  document.getElementById('ticketBarcodeNum').textContent = `MIT-DCARTEL-${state.rollNumber}`;
+
+  // Preload audio files on user gesture
+  try {
+    jumpscareAudio.load();
+    posterSongAudio.load();
+  } catch (e) {}
 
   // Trigger Lightning and Thunder
   triggerLightning();
@@ -500,6 +523,12 @@ function triggerJumpScare() {
     state.presentsTimer = null;
   }
 
+  // Stop background drone
+  if (state.droneGain && state.audioContext) {
+    state.droneGain.gain.setValueAtTime(0, state.audioContext.currentTime);
+    state.droneGain = null;
+  }
+
   const overlay = document.getElementById('jumpscareOverlay');
   if (!overlay) {
     dismissJumpscareAndRevealPoster();
@@ -510,10 +539,20 @@ function triggerJumpScare() {
   overlay.classList.add('active');
   overlay.setAttribute('aria-hidden', 'false');
 
-  // Visceral screech and tactile vibration
-  playJumpscareAudio();
+  // Play Insidious Title Sound requested by user
+  if (state.soundEnabled) {
+    try {
+      jumpscareAudio.currentTime = 0;
+      jumpscareAudio.volume = 1.0;
+      jumpscareAudio.play().catch(e => console.warn('Jumpscare audio failed:', e));
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  // Tactile vibration on mobile
   if (navigator.vibrate) {
-    try { navigator.vibrate([100, 50, 200, 50, 300]); } catch (e) {}
+    try { navigator.vibrate([120, 60, 240, 60, 350]); } catch (e) {}
   }
 }
 
@@ -528,7 +567,21 @@ function dismissJumpscareAndRevealPoster() {
     overlay.classList.add('dismissing');
   }
 
-  // Ghost whoosh & blade slice
+  // Fade out / pause jumpscare audio swiftly
+  try {
+    const fadeOut = setInterval(() => {
+      if (jumpscareAudio.volume > 0.15) {
+        jumpscareAudio.volume -= 0.15;
+      } else {
+        clearInterval(fadeOut);
+        jumpscareAudio.pause();
+        jumpscareAudio.currentTime = 0;
+      }
+    }, 30);
+  } catch (e) {
+    jumpscareAudio.pause();
+  }
+
   playBladeSlash();
 
   setTimeout(() => {
@@ -537,7 +590,7 @@ function dismissJumpscareAndRevealPoster() {
       overlay.setAttribute('aria-hidden', 'true');
     }
 
-    // Transition to Poster Stage
+    // Transition to Fullscreen Poster Stage
     const presentsStage = document.getElementById('stage-presents');
     if (presentsStage) presentsStage.classList.remove('active');
 
@@ -546,41 +599,50 @@ function dismissJumpscareAndRevealPoster() {
 
     document.body.classList.add('poster-view-active');
 
-    // Smooth scroll to top of fullscreen poster hero
+    // Smooth scroll to top of viewport
     window.scrollTo({ top: 0, behavior: 'instant' });
 
-    // Initialize Flashlight Spotlight
-    initFlashlightCanvas();
-
-    // Subtle atmospheric rumble
-    setTimeout(playThunder, 350);
+    // Play Poster Reveal Song requested by user: soulfuljamtracks-spooky-halloween-586106.mp3
+    if (state.soundEnabled) {
+      try {
+        posterSongAudio.currentTime = 0;
+        posterSongAudio.volume = 0.9;
+        posterSongAudio.play().catch(e => console.warn('Poster song play failed:', e));
+      } catch (e) {
+        console.warn(e);
+      }
+    }
 
     isDismissingJumpscare = false;
-  }, 350);
-}
-
-// Scroll down smoothly to VIP pass & event details
-function scrollToDetails() {
-  playBladeSlash();
-  const target = document.getElementById('scrollDetailsSection');
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
-  }
+  }, 320);
 }
 
 // Replay Ritual from Start
 function restartExperience() {
   playBladeSlash();
+  posterSongAudio.pause();
+  posterSongAudio.currentTime = 0;
+  jumpscareAudio.pause();
+  jumpscareAudio.currentTime = 0;
+
   document.body.classList.remove('poster-view-active');
   const overlay = document.getElementById('jumpscareOverlay');
   if (overlay) overlay.classList.remove('active', 'dismissing');
+
   document.querySelectorAll('.ritual-stage').forEach(s => s.classList.remove('active'));
   document.getElementById('stage-name').classList.add('active');
   document.getElementById('juniorName').value = '';
   document.getElementById('rollNumber').value = '';
-  document.getElementById('labelJuniorName').textContent = 'JUNIOR';
-  document.getElementById('labelRollNumber').textContent = 'ROLL NO: ---';
+  const lblName = document.getElementById('labelJuniorName');
+  if (lblName) lblName.textContent = 'JUNIOR';
+  const lblRoll = document.getElementById('labelRollNumber');
+  if (lblRoll) lblRoll.textContent = 'ROLL NO: ---';
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (state.soundEnabled) {
+    startHorrorDrone();
+  }
 }
 
 // Lightning Flash Utility
@@ -597,330 +659,7 @@ function triggerLightning() {
 }
 
 // ==========================================================================
-// 4. INTERACTIVE FLASHLIGHT SPOTLIGHT CANVAS ON POSTER
-// ==========================================================================
-
-const posterFrame = document.getElementById('posterFrame');
-const fCanvas = document.getElementById('flashlightCanvas');
-let fCtx = null;
-
-function initFlashlightCanvas() {
-  if (!fCanvas) return;
-  fCtx = fCanvas.getContext('2d');
-  resizeFlashlightCanvas();
-  renderFlashlight();
-}
-
-function resizeFlashlightCanvas() {
-  if (!posterFrame || !fCanvas) return;
-  const rect = posterFrame.getBoundingClientRect();
-  fCanvas.width = rect.width;
-  fCanvas.height = rect.height;
-}
-
-window.addEventListener('resize', () => {
-  if (document.getElementById('stage-poster').classList.contains('active')) {
-    resizeFlashlightCanvas();
-  }
-});
-
-function renderFlashlight() {
-  if (!fCtx || !fCanvas) return;
-
-  fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
-
-  if (!state.flashlightActive) {
-    // If flashlight is toggled off, no dark mask
-    return;
-  }
-
-  const w = fCanvas.width;
-  const h = fCanvas.height;
-
-  // Default coordinates if cursor not moved yet (center of poster)
-  const cx = state.cursor.isInside ? state.cursor.x : w * 0.5;
-  const cy = state.cursor.isInside ? state.cursor.y : h * 0.35;
-
-  // Spotlight radii (responsive to canvas size)
-  const innerRadius = Math.max(35, w * 0.12);
-  const outerRadius = Math.max(140, w * 0.42);
-
-  // Fill entire poster with atmospheric darkness
-  fCtx.fillStyle = 'rgba(4, 2, 3, 0.92)';
-  fCtx.fillRect(0, 0, w, h);
-
-  // Cut out flashlight beam using destination-out composite mode
-  fCtx.save();
-  fCtx.globalCompositeOperation = 'destination-out';
-
-  const gradient = fCtx.createRadialGradient(cx, cy, innerRadius * 0.2, cx, cy, outerRadius);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-  gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.85)');
-  gradient.addColorStop(0.85, 'rgba(0, 0, 0, 0.35)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-  fCtx.fillStyle = gradient;
-  fCtx.beginPath();
-  fCtx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
-  fCtx.fill();
-  fCtx.restore();
-
-  // Subtle warm amber/crimson torch beam reflection
-  fCtx.save();
-  const rimGrad = fCtx.createRadialGradient(cx, cy, 0, cx, cy, outerRadius);
-  rimGrad.addColorStop(0, 'rgba(255, 180, 80, 0.12)');
-  rimGrad.addColorStop(0.5, 'rgba(220, 40, 40, 0.06)');
-  rimGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  fCtx.fillStyle = rimGrad;
-  fCtx.beginPath();
-  fCtx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
-  fCtx.fill();
-  fCtx.restore();
-}
-
-// Mouse movement over poster frame
-posterFrame.addEventListener('mousemove', (e) => {
-  const rect = posterFrame.getBoundingClientRect();
-  state.cursor.x = e.clientX - rect.left;
-  state.cursor.y = e.clientY - rect.top;
-  state.cursor.isInside = true;
-  renderFlashlight();
-});
-
-posterFrame.addEventListener('mouseleave', () => {
-  state.cursor.isInside = false;
-  renderFlashlight();
-});
-
-// Touch movement over poster frame (mobile)
-posterFrame.addEventListener('touchmove', (e) => {
-  if (!e.touches.length) return;
-  const rect = posterFrame.getBoundingClientRect();
-  state.cursor.x = e.touches[0].clientX - rect.left;
-  state.cursor.y = e.touches[0].clientY - rect.top;
-  state.cursor.isInside = true;
-  renderFlashlight();
-}, { passive: true });
-
-posterFrame.addEventListener('touchstart', (e) => {
-  const rect = posterFrame.getBoundingClientRect();
-  state.cursor.x = e.touches[0].clientX - rect.left;
-  state.cursor.y = e.touches[0].clientY - rect.top;
-  state.cursor.isInside = true;
-  renderFlashlight();
-}, { passive: true });
-
-function toggleFlashlightMode() {
-  state.flashlightActive = !state.flashlightActive;
-  const btn = document.getElementById('flashlightIconBtn');
-
-  if (state.flashlightActive) {
-    if (btn) btn.classList.add('active');
-    playBladeSlash();
-  } else {
-    if (btn) btn.classList.remove('active');
-  }
-  renderFlashlight();
-}
-
-// Bind flashlight icon toggle
-const flashlightIconBtn = document.getElementById('flashlightIconBtn');
-if (flashlightIconBtn) {
-  flashlightIconBtn.addEventListener('click', toggleFlashlightMode);
-}
-
-// ==========================================================================
-// 5. SLASHER QUOTES & AUDIO EASTER EGGS
-// ==========================================================================
-
-const slasherData = {
-  freddy: {
-    name: 'Freddy Krueger',
-    quote: "One, two, Freddy's coming for you... Welcome to the Seminar Hall, junior!",
-    sound: () => { playBladeSlash(); setTimeout(playBladeSlash, 140); }
-  },
-  jason: {
-    name: 'Jason Voorhees',
-    quote: "Ki ki ki... ma ma ma... Camp Blood never closes its doors.",
-    sound: () => { playHeartbeat(); setTimeout(playHeartbeat, 300); }
-  },
-  michael: {
-    name: 'Michael Myers',
-    quote: "*Heavy rhythmic breathing*... It's Halloween night. He has arrived.",
-    sound: () => { playChurchBell(); }
-  },
-  ghostface: {
-    name: 'Ghostface',
-    quote: "Hello junior... What's your favorite scary movie? Don't hang up.",
-    sound: () => { playBladeSlash(); playThunder(); }
-  },
-  chucky: {
-    name: 'Chucky',
-    quote: "Hi, I'm Chucky, your friend till the end! Hidey-ho, ha-ha-ha!",
-    sound: () => { playBladeSlash(); }
-  }
-};
-
-let quoteTimeout = null;
-
-function triggerSlasherQuote(characterKey) {
-  const item = slasherData[characterKey];
-  if (!item) return;
-
-  item.sound();
-
-  const toast = document.getElementById('slasherQuoteBox');
-  const text = document.getElementById('slasherQuoteText');
-  text.innerHTML = `<strong>${item.name}:</strong> "${item.quote}"`;
-
-  toast.classList.add('active');
-
-  if (quoteTimeout) clearTimeout(quoteTimeout);
-  quoteTimeout = setTimeout(() => {
-    toast.classList.remove('active');
-  }, 4500);
-}
-
-// ==========================================================================
-// 6. VIP ADMIT PASS GENERATOR (HTML5 CANVAS EXPORT)
-// ==========================================================================
-
-// Preload D Cartel Logo for Pass Generation
-const cartelTicketLogo = new Image();
-cartelTicketLogo.src = 'assets/cartel_logo.png';
-
-function generateAndDownloadPass() {
-  playBladeSlash();
-  const canvas = document.getElementById('ticketExportCanvas');
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width;
-  const h = canvas.height;
-
-  // Background Ticket Texture
-  ctx.fillStyle = '#0f0a0d';
-  ctx.fillRect(0, 0, w, h);
-
-  // Double Border
-  ctx.strokeStyle = '#c4151c';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(16, 16, w - 32, h - 32);
-
-  ctx.strokeStyle = '#e5a024';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(26, 26, w - 52, h - 52);
-
-  // Watermark Crest
-  ctx.fillStyle = 'rgba(196, 21, 28, 0.08)';
-  ctx.beginPath();
-  ctx.arc(w / 2, h / 2, 160, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw D Cartel Dragon Sword Logo if loaded
-  if (cartelTicketLogo.complete && cartelTicketLogo.naturalWidth > 0) {
-    ctx.drawImage(cartelTicketLogo, 46, 36, 52, 62);
-    ctx.drawImage(cartelTicketLogo, w - 98, 36, 52, 62);
-  }
-
-  // Header Title
-  ctx.fillStyle = '#cfbeaa';
-  ctx.font = 'bold 20px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('MAHAGURU INSTITUTE OF TECHNOLOGY', w / 2, 58);
-
-  ctx.fillStyle = '#e6222a';
-  ctx.font = 'bold 15px serif';
-  ctx.fillText('⚔ HOSTED BY D CARTEL ⚔', w / 2, 82);
-
-  ctx.fillStyle = '#f5e8d7';
-  ctx.font = '900 36px serif';
-  ctx.fillText('AFTER HOUR PARTY', w / 2, 122);
-
-  ctx.fillStyle = '#b89f82';
-  ctx.font = '15px monospace';
-  ctx.fillText('OFFICIAL VIP SURVIVOR ADMIT PASS', w / 2, 148);
-
-  // Divider Line
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.beginPath();
-  ctx.moveTo(60, 168);
-  ctx.lineTo(w - 60, 168);
-  ctx.stroke();
-
-  // Attendee Info (Left Column)
-  ctx.textAlign = 'left';
-  const attendee = state.juniorName ? state.juniorName.toUpperCase() : 'JUNIOR GUEST';
-  const roll = state.rollNumber ? state.rollNumber.toUpperCase() : 'MIT-ROLL-666';
-
-  ctx.fillStyle = '#8f7d6a';
-  ctx.font = '14px monospace';
-  ctx.fillText('HONORED GUEST:', 70, 210);
-  ctx.fillStyle = '#e6222a';
-  ctx.font = 'bold 26px serif';
-  ctx.fillText(attendee, 70, 244);
-
-  ctx.fillStyle = '#8f7d6a';
-  ctx.font = '14px monospace';
-  ctx.fillText('COLLEGE ID / ROLL NUMBER:', 70, 290);
-  ctx.fillStyle = '#f0e3d2';
-  ctx.font = 'bold 22px monospace';
-  ctx.fillText(roll, 70, 318);
-
-  // Event Details (Right Column)
-  ctx.fillStyle = '#8f7d6a';
-  ctx.font = '14px monospace';
-  ctx.fillText('RITUAL DATE:', 540, 210);
-  ctx.fillStyle = '#f0e3d2';
-  ctx.font = 'bold 22px serif';
-  ctx.fillText('28 . 10 . 2026', 540, 238);
-
-  ctx.fillStyle = '#8f7d6a';
-  ctx.font = '14px monospace';
-  ctx.fillText('RITUAL VENUE:', 540, 280);
-  ctx.fillStyle = '#f0e3d2';
-  ctx.font = 'bold 22px serif';
-  ctx.fillText('SEMINAR HALL', 540, 308);
-
-  ctx.fillStyle = '#8f7d6a';
-  ctx.font = '14px monospace';
-  ctx.fillText('DOORS OPEN:', 540, 348);
-  ctx.fillStyle = '#e6222a';
-  ctx.font = 'bold 18px serif';
-  ctx.fillText('AFTER HOURS', 540, 372);
-
-  // Barcode representation
-  ctx.fillStyle = '#cfbeaa';
-  for (let x = 70; x < 450; x += 5) {
-    const barWidth = (x % 3 === 0) ? 3 : 1.5;
-    ctx.fillRect(x, 370, barWidth, 38);
-  }
-  ctx.fillStyle = '#7a6755';
-  ctx.font = '12px monospace';
-  ctx.fillText(`* MIT-DCARTEL-${roll}-2026 *`, 70, 428);
-
-  // Blood Seal Stamp
-  ctx.save();
-  ctx.translate(w - 140, h - 85);
-  ctx.rotate(-0.15);
-  ctx.strokeStyle = '#c4151c';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(-65, -25, 130, 50);
-  ctx.fillStyle = '#c4151c';
-  ctx.font = 'bold 13px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('HOSTED BY D CARTEL', 0, -2);
-  ctx.fillText('CONFIRMED', 0, 16);
-  ctx.restore();
-
-  // Trigger File Download
-  // Trigger File Download
-  const link = document.createElement('a');
-  link.download = `AfterHour_Pass_${attendee.replace(/\s+/g, '_')}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
-
-// ==========================================================================
-// 7. FULLSCREEN TOGGLE & INITIALIZATION
+// 4. FULLSCREEN TOGGLE & INITIALIZATION
 // ==========================================================================
 
 function toggleFullscreen() {
@@ -944,10 +683,18 @@ document.addEventListener('click', () => {
   if (state.soundEnabled && !state.droneGain) {
     startHorrorDrone();
   }
+  try {
+    jumpscareAudio.load();
+    posterSongAudio.load();
+  } catch (e) {}
 }, { once: true });
 
 document.addEventListener('keydown', () => {
   if (state.soundEnabled && !state.droneGain) {
     startHorrorDrone();
   }
+  try {
+    jumpscareAudio.load();
+    posterSongAudio.load();
+  } catch (e) {}
 }, { once: true });

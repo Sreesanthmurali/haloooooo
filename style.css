@@ -494,68 +494,340 @@ html, body {
 
 .potion-wrapper {
   position: relative;
-  width: 160px;
+  width: clamp(175px, 48vw, 195px);
   margin: 0 auto;
 }
+
+/* Pulsating Arterial Liquid Blood Core */
+.bottle-blood-core {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 74%;
+  height: 48%;
+  background: radial-gradient(ellipse at 50% 65%, #ff0f24 0%, #c40915 45%, #7a030b 80%, transparent 100%);
+  mix-blend-mode: screen;
+  border-radius: 40% 40% 36% 36%;
+  pointer-events: none;
+  animation: bloodHeartbeatPulse 2s ease-in-out infinite alternate;
+  z-index: 1;
+  filter: blur(3px);
+}
+
 .potion-img {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 10px 20px rgba(180, 20, 20, 0.4));
+  display: block;
+  filter: drop-shadow(0 12px 25px rgba(220, 20, 30, 0.65)) drop-shadow(0 0 15px rgba(255, 30, 40, 0.35));
+  animation: bottleGentleFloat 4s ease-in-out infinite alternate;
+}
+
+/* --------------------------------------------------------------------------
+   VISCERAL BLOOD OOZING & DRIPPING OVERLAYS
+   -------------------------------------------------------------------------- */
+.blood-ooze-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Viscous blood streams creeping down the bottle glass */
+.ooze-stream {
+  position: absolute;
+  background: linear-gradient(180deg, #600208 0%, #a80c16 40%, #e61525 80%, #ff2a3a 100%);
+  box-shadow: 0 0 5px rgba(230, 21, 37, 0.75), inset 1px 0 2px rgba(255, 120, 130, 0.6);
+  border-radius: 3px 3px 6px 6px;
+  opacity: 0.92;
+}
+
+.stream-cork-center {
+  top: 22%;
+  left: 49.5%;
+  width: 3.5px;
+  height: 42px;
+  transform: translateX(-50%);
+  animation: streamCreep 4s ease-in-out infinite alternate;
+}
+
+.stream-left-shoulder {
+  top: 29%;
+  left: 20%;
+  width: 4.5px;
+  height: 78px;
+  transform: rotate(5deg);
+  border-radius: 3px 3px 7px 7px;
+  animation: streamCreep 3.6s 0.5s ease-in-out infinite alternate;
+}
+
+.stream-right-shoulder {
+  top: 31%;
+  right: 21%;
+  width: 4px;
+  height: 88px;
+  transform: rotate(-6deg);
+  border-radius: 3px 3px 6px 6px;
+  animation: streamCreep 4.2s 1s ease-in-out infinite alternate;
+}
+
+.stream-label-side {
+  top: 50%;
+  right: 23%;
+  width: 3.2px;
+  height: 64px;
+  opacity: 0.88;
+  animation: streamCreep 3.8s 1.5s ease-in-out infinite alternate;
+}
+
+/* Realistic animated dripping blood droplets */
+.oozing-droplet {
+  position: absolute;
+  width: 7px;
+  height: 9px;
+  background: radial-gradient(circle at 35% 35%, #ff525f 0%, #e61525 50%, #75030b 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 0 0 8px #ff1e32, inset 1px 1px 2px rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.drop-left {
+  left: 19.5%;
+  animation: bloodDripLeft 3.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.drop-right {
+  right: 20.5%;
+  animation: bloodDripRight 4.4s 1.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.drop-cork {
+  left: 49.5%;
+  animation: bloodDripCork 3.4s 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Wet pooled blood stains on parchment */
+.blood-splatter {
+  position: absolute;
+  background: radial-gradient(circle, rgba(196, 21, 28, 0.85) 0%, rgba(130, 8, 14, 0.7) 65%, transparent 100%);
+  filter: drop-shadow(0 0 3px rgba(200, 20, 30, 0.6));
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.splatter-top-right {
+  top: 52%;
+  right: 25.5%;
+  width: 15px;
+  height: 16px;
+  border-radius: 40% 60% 70% 30% / 50% 30% 70% 50%;
+  animation: pulseDot 2.8s infinite alternate;
+}
+.splatter-bottom-left {
+  top: 67%;
+  left: 25.5%;
+  width: 17px;
+  height: 14px;
+  border-radius: 60% 40% 30% 70% / 60% 50% 50% 40%;
+  animation: pulseDot 3.2s 1s infinite alternate;
+}
+
+/* Droplet Falling Keyframe Animations */
+@keyframes bloodDripLeft {
+  0% {
+    top: 30%;
+    opacity: 0;
+    transform: scale(0.4, 0.4);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  45% {
+    top: 52%;
+    transform: scale(0.85, 1.4);
+  }
+  75% {
+    top: 74%;
+    opacity: 1;
+    transform: scale(0.7, 1.8);
+  }
+  90% {
+    top: 85%;
+    opacity: 0.85;
+    transform: scale(1.4, 0.6);
+  }
+  100% {
+    top: 87%;
+    opacity: 0;
+    transform: scale(2, 0.2);
+  }
+}
+
+@keyframes bloodDripRight {
+  0% {
+    top: 32%;
+    opacity: 0;
+    transform: scale(0.4, 0.4);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  50% {
+    top: 55%;
+    transform: scale(0.85, 1.45);
+  }
+  80% {
+    top: 78%;
+    opacity: 1;
+    transform: scale(0.7, 1.85);
+  }
+  92% {
+    top: 87%;
+    opacity: 0.85;
+    transform: scale(1.4, 0.6);
+  }
+  100% {
+    top: 89%;
+    opacity: 0;
+    transform: scale(2, 0.2);
+  }
+}
+
+@keyframes bloodDripCork {
+  0% {
+    top: 22%;
+    opacity: 0;
+    transform: scale(0.4, 0.4);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  60% {
+    top: 36%;
+    transform: scale(0.85, 1.35);
+  }
+  90% {
+    top: 48%;
+    opacity: 0.9;
+    transform: scale(0.7, 1.7);
+  }
+  100% {
+    top: 52%;
+    opacity: 0;
+    transform: scale(1.4, 0.4);
+  }
+}
+
+@keyframes streamCreep {
+  0% {
+    transform: scaleY(0.95);
+    filter: drop-shadow(0 0 3px rgba(220, 20, 30, 0.5));
+  }
+  100% {
+    transform: scaleY(1.06);
+    filter: drop-shadow(0 0 6px rgba(255, 30, 45, 0.85));
+  }
+}
+
+@keyframes bloodHeartbeatPulse {
+  0% {
+    transform: translateX(-50%) scale(0.97);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(0.99);
+    opacity: 0.85;
+  }
+}
+
+@keyframes bottleGentleFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
 }
 
 .potion-label-content {
   position: absolute;
-  top: 48%;
-  left: 50%;
+  top: 60.5%;
+  left: 51%;
   transform: translate(-50%, -50%);
-  width: 65%;
-  text-align: center;
-  pointer-events: none;
-  color: #382417;
-}
-.label-dcartel-header {
+  width: 48%;
+  max-width: 48%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  text-align: center;
+  pointer-events: none;
+  color: #241108;
+  line-height: 1.1;
+  overflow: hidden;
+  z-index: 6;
+}
+.label-dcartel-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   font-family: var(--font-vintage);
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: #5a1215;
-  border-bottom: 1px solid rgba(90, 18, 21, 0.3);
-  padding-bottom: 2px;
-  margin-bottom: 3px;
+  font-size: clamp(0.48rem, 1.8vw, 0.54rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #6a1418;
+  border-bottom: 1px solid rgba(106, 20, 24, 0.35);
+  padding-bottom: 1px;
+  margin-bottom: 2px;
+  white-space: nowrap;
 }
 .label-dcartel-logo {
-  height: 10px;
+  height: clamp(8px, 2.2vw, 10px);
   width: auto;
 }
 .label-name {
   font-family: var(--font-gothic);
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1.1;
-  color: #1a0f0a;
+  font-size: clamp(0.68rem, 2.6vw, 0.78rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #1a0804;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
   word-break: break-word;
-  max-height: 2.2em;
-  overflow: hidden;
+  max-width: 100%;
+  line-height: 1.05;
+  margin-bottom: 1px;
 }
 .label-id {
   font-family: var(--font-vintage);
-  font-size: 0.66rem;
-  letter-spacing: 0.04em;
-  color: #63221b;
-  margin-top: 2px;
+  font-size: clamp(0.52rem, 2vw, 0.6rem);
   font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #521612;
+  white-space: nowrap;
+  line-height: 1.1;
 }
 .label-sub {
   font-family: var(--font-vintage);
-  font-size: 0.52rem;
-  color: #6d5b4a;
+  font-size: clamp(0.44rem, 1.6vw, 0.5rem);
+  color: #5c4532;
+  letter-spacing: 0.06em;
   margin-top: 1px;
+  white-space: nowrap;
 }
 .label-blood-seal {
-  font-size: 0.8rem;
+  font-size: clamp(0.55rem, 2vw, 0.68rem);
+  line-height: 1;
+  margin-top: 1px;
 }
 
 .potion-glow-aura {
@@ -806,488 +1078,113 @@ html, body {
   flex-wrap: wrap;
 }
 
-/* Sleek Flashlight Icon Toggle Button */
-.flashlight-icon-btn {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 50%;
-  background: rgba(22, 14, 16, 0.95);
-  border: 1px solid rgba(196, 21, 28, 0.5);
-  color: var(--parchment-light);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s var(--ease-cinematic);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-  flex-shrink: 0;
-}
-.flashlight-icon-btn:hover {
-  transform: scale(1.08);
-  border-color: var(--candle-amber);
-}
-.flashlight-icon-btn.active {
-  background: linear-gradient(135deg, rgba(80, 15, 20, 0.95) 0%, rgba(35, 10, 12, 0.95) 100%);
-  border-color: var(--candle-amber);
-  color: #ffb74d;
-  box-shadow: 0 0 16px rgba(255, 152, 0, 0.45), 0 0 8px rgba(220, 20, 20, 0.4);
-}
-.flashlight-svg {
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 0 4px currentColor);
-  transition: transform 0.2s ease;
-}
-.flashlight-icon-btn.active .flashlight-svg {
-  transform: rotate(-15deg);
-}
-.flashlight-icon-btn:not(.active) .beam-ray {
-  opacity: 0.15;
-}
-.flashlight-pulse-dot {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--candle-amber);
-  box-shadow: 0 0 6px var(--candle-amber);
-  animation: pulseDot 1.5s infinite;
-}
-.flashlight-icon-btn:not(.active) .flashlight-pulse-dot {
-  background: rgba(200, 200, 200, 0.3);
-  box-shadow: none;
-  animation: none;
-}
-
-/* Poster Fullscreen Hero Section */
-.stage-poster-layout {
-  max-width: 100% !important;
+/* --------------------------------------------------------------------------
+   STAGE 4: FULLSCREEN POSTER AS IT IS (NO FLASHLIGHT, NO TICKET)
+   -------------------------------------------------------------------------- */
+.stage-poster-fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: 100vw !important;
   padding: 0 !important;
-}
-
-body.poster-view-active .ritual-container {
-  align-items: flex-start;
-  min-height: auto;
-  padding-top: 60px;
-}
-
-.poster-fullscreen-hero {
-  min-height: calc(100dvh - 80px);
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-bottom: 24px;
-}
-
-.poster-hero-container {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 0 4px;
-  display: flex;
-  justify-content: center;
-}
-
-/* Master Poster Frame */
-.poster-interactive-frame {
-  position: relative;
-  width: 100%;
-  max-height: calc(100dvh - 155px);
-  max-width: calc((100dvh - 155px) * (1024 / 1536));
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.95), 0 0 30px rgba(180, 20, 20, 0.4);
-  border: 2px solid rgba(196, 21, 28, 0.6);
-  background: #000;
-  cursor: crosshair;
-  aspect-ratio: 1024 / 1536;
-  touch-action: none; /* Prevents scroll interference while touching poster flashlight */
-}
-
-/* Scroll Down Prompt Button */
-.scroll-prompt-container {
-  display: flex;
-  justify-content: center;
+  margin: 0 !important;
+  display: none;
   align-items: center;
-  margin-top: 16px;
+  justify-content: center;
+  background: #000;
+  z-index: 50;
+  overflow: hidden;
 }
-.scroll-down-pill {
-  background: rgba(18, 11, 14, 0.92);
+
+.stage-poster-fullscreen.active {
+  display: flex;
+  animation: posterCinematicFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+body.poster-view-active {
+  overflow: hidden !important;
+}
+
+body.poster-view-active .experience-header {
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+body.poster-view-active .brand-crest {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.poster-view-active .header-controls {
+  pointer-events: auto;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+body.poster-view-active .header-controls:hover {
+  opacity: 1;
+}
+
+.poster-fullscreen-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #000;
+}
+
+.poster-fullscreen-img {
+  max-width: 100vw;
+  max-height: 100dvh;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
+  display: block;
+}
+
+.poster-replay-pill {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background: rgba(18, 11, 14, 0.85);
   border: 1px solid rgba(196, 21, 28, 0.6);
   color: var(--parchment-mid);
   font-family: var(--font-vintage);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  padding: 8px 18px;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
   border-radius: 20px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
-  transition: all 0.25s var(--ease-cinematic);
-  animation: bounceDown 2s infinite ease-in-out;
+  z-index: 60;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  opacity: 0.7;
 }
-.scroll-down-pill:hover {
-  background: rgba(45, 15, 18, 0.95);
-  border-color: var(--blood-bright);
+
+.poster-replay-pill:hover,
+.poster-replay-pill:active {
+  opacity: 1;
+  background: rgba(196, 21, 28, 0.85);
   color: #fff;
+  border-color: #ff2233;
   box-shadow: 0 0 15px var(--blood-glow);
 }
-.scroll-arrow {
-  color: var(--blood-bright);
-  font-size: 1rem;
-  font-weight: 900;
-}
 
-@keyframes bounceDown {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-
-/* Below-the-fold Scrollable Section */
-.poster-scroll-details {
-  width: 100%;
-  max-width: 900px;
-  margin: 30px auto 0;
-  padding: 30px 16px 40px;
-  border-top: 1px solid rgba(196, 21, 28, 0.3);
-  background: linear-gradient(180deg, rgba(10, 6, 8, 0.8) 0%, transparent 100%);
-}
-
-.details-cards-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-@media (min-width: 768px) {
-  .details-cards-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: start;
+@keyframes posterCinematicFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
   }
-}
-
-.replay-button-row {
-  margin-top: 20px;
-}
-
-.vintage-poster-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.35s ease-out;
-}
-
-.flashlight-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 5;
-  pointer-events: none;
-}
-
-/* Slasher Hotspots */
-.slasher-hotspots {
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-}
-.hotspot {
-  position: absolute;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-.hotspot-freddy { top: 6%; left: 33%; width: 34%; height: 25%; }
-.hotspot-jason { top: 17%; left: 10%; width: 28%; height: 23%; }
-.hotspot-michael { top: 21%; right: 12%; width: 28%; height: 24%; }
-.hotspot-ghostface { bottom: 22%; left: 6%; width: 28%; height: 24%; }
-.hotspot-chucky { bottom: 16%; right: 5%; width: 28%; height: 24%; }
-
-/* Quote Toast */
-.slasher-quote-toast {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(14, 8, 10, 0.96);
-  border: 1px solid var(--blood-bright);
-  box-shadow: 0 0 15px rgba(220, 20, 20, 0.7);
-  padding: 8px 14px;
-  border-radius: var(--radius-subtle);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s var(--ease-cinematic);
-  width: 90%;
-  max-width: 360px;
-}
-.slasher-quote-toast.active {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-.quote-icon { font-size: 1.1rem; }
-.quote-text {
-  font-family: var(--font-vintage);
-  font-size: 0.76rem;
-  color: var(--parchment-light);
-  line-height: 1.25;
-}
-
-/* Sidebar & Dossier */
-.reveal-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.dossier-card {
-  background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
-  padding: 18px 16px;
-  border-radius: var(--radius-card);
-}
-.dossier-header-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.dossier-dcartel-logo {
-  height: 22px;
-  width: auto;
-  filter: drop-shadow(0 0 6px var(--blood-glow));
-}
-.dossier-badge {
-  font-family: var(--font-vintage);
-  font-size: 0.65rem;
-  letter-spacing: 0.22em;
-  color: var(--blood-bright);
-}
-.dossier-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.3rem, 4vw, 1.6rem);
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  color: var(--parchment-light);
-  margin-bottom: 2px;
-}
-.dossier-org {
-  font-family: var(--font-serif);
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  color: var(--parchment-aged);
-  margin-bottom: 14px;
-}
-
-.event-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.meta-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.meta-item-full {
-  grid-column: 1 / -1;
-  padding-top: 10px;
-  border-top: 1px solid rgba(196, 21, 28, 0.2);
-}
-.meta-icon {
-  font-size: 1rem;
-  color: var(--blood-bright);
-}
-.meta-content {
-  display: flex;
-  flex-direction: column;
-}
-.meta-label {
-  font-family: var(--font-vintage);
-  font-size: 0.62rem;
-  color: var(--parchment-dark);
-  letter-spacing: 0.12em;
-}
-.meta-value {
-  font-family: var(--font-serif);
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--parchment-light);
-}
-.highlight-host {
-  color: var(--blood-bright);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
-.dcartel-authorizer-lockup {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-}
-.meta-dcartel-inline {
-  height: 18px;
-  width: auto;
-}
-
-/* VIP Pass Card */
-.vip-pass-card {
-  background: linear-gradient(135deg, rgba(28, 16, 20, 0.95) 0%, rgba(14, 8, 10, 0.95) 100%);
-  border: 1px dashed rgba(220, 160, 50, 0.4);
-  padding: 16px;
-  border-radius: var(--radius-card);
-}
-.pass-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.pass-brand-lockup {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.pass-dcartel-logo {
-  height: 16px;
-  width: auto;
-}
-.pass-tag {
-  font-family: var(--font-vintage);
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  color: var(--candle-amber);
-}
-.pass-stamp {
-  font-family: var(--font-vintage);
-  font-size: 0.6rem;
-  border: 1px solid var(--blood-bright);
-  color: var(--blood-bright);
-  padding: 2px 5px;
-  letter-spacing: 0.08em;
-  transform: rotate(2deg);
-}
-
-.pass-body {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 12px;
-}
-.pass-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.78rem;
-}
-.pk {
-  color: var(--parchment-dark);
-  font-family: var(--font-vintage);
-}
-.pv {
-  font-family: var(--font-serif);
-  color: var(--parchment-light);
-  font-weight: 700;
-}
-.pv.highlight {
-  color: var(--blood-bright);
-}
-
-.pass-barcode {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 0;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
-  margin-bottom: 12px;
-}
-.barcode-lines {
-  width: 100%;
-  height: 24px;
-  background: repeating-linear-gradient(
-    90deg,
-    #cfbeaa 0px,
-    #cfbeaa 2px,
-    transparent 2px,
-    transparent 5px,
-    #cfbeaa 5px,
-    #cfbeaa 9px,
-    transparent 9px,
-    transparent 11px
-  );
-  opacity: 0.6;
-}
-.barcode-num {
-  font-family: var(--font-vintage);
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  color: var(--parchment-aged);
-}
-
-.pass-action-btn {
-  width: 100%;
-  min-height: var(--min-tap-target);
-  font-size: 0.85rem;
-}
-
-.replay-btn {
-  width: 100%;
-  min-height: var(--min-tap-target);
-}
-
-/* Bottom Pumpkins Row */
-.reveal-pumpkins-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(196, 21, 28, 0.2);
-}
-.pumpkin-item {
-  width: 65px;
-}
-.pumpkin-img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 0 10px rgba(255, 120, 0, 0.4));
-}
-.pumpkin-center-sigil {
-  font-family: var(--font-vintage);
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  color: var(--parchment-dark);
-  text-align: center;
-  padding: 0 8px;
-}
-.dcartel-footer-lockup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.pumpkin-dcartel-logo {
-  height: 16px;
-  width: auto;
-  filter: drop-shadow(0 0 6px var(--blood-glow));
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1496,10 +1393,10 @@ body.poster-view-active .ritual-container {
 }
 
 .jumpscare-overlay.dismissing .screamer-ghost {
-  transform: scale(3.8) translateY(-50px) !important;
+  transform: scale(1.4) translateY(-30px) !important;
   opacity: 0 !important;
-  filter: blur(14px) contrast(2.2) !important;
-  transition: transform 0.38s cubic-bezier(0.18, 0, 0, 1), opacity 0.35s ease-out, filter 0.35s ease-out !important;
+  filter: blur(10px) contrast(1.5) !important;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, filter 0.3s ease-out !important;
 }
 
 .jumpscare-strobe {
@@ -1528,11 +1425,14 @@ body.poster-view-active .ritual-container {
 }
 
 .screamer-avatar {
-  width: clamp(260px, 70vw, 550px);
+  max-width: 88vw;
+  max-height: 80vh;
+  width: auto;
   height: auto;
-  filter: contrast(1.8) brightness(1.2) drop-shadow(0 0 45px rgba(230, 20, 20, 0.95)) drop-shadow(0 0 90px #c4151c);
-  transform: scale(0.6);
-  animation: screamerLunge 0.5s cubic-bezier(0.12, 0, 0.39, 0) forwards;
+  object-fit: contain;
+  filter: contrast(1.3) brightness(1.1) drop-shadow(0 0 35px rgba(220, 20, 20, 0.95)) drop-shadow(0 0 70px #c4151c);
+  transform: scale(0.35);
+  animation: screamerLunge 0.35s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
 }
 
 /* Slasher Razor Claw Marks Slicing the Screen */
@@ -1626,9 +1526,9 @@ body.poster-view-active .ritual-container {
 }
 
 @keyframes screamerLunge {
-  0% { transform: scale(0.6) rotate(-5deg); opacity: 0; }
-  35% { transform: scale(1.4) rotate(3deg); opacity: 1; }
-  100% { transform: scale(2.6) rotate(0deg); opacity: 1; }
+  0% { transform: scale(0.35) rotate(-3deg); opacity: 0; }
+  60% { transform: scale(1.12) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1.0) rotate(0deg); opacity: 1; }
 }
 
 @keyframes clawSlash {
