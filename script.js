@@ -678,6 +678,15 @@ function toggleFullscreen() {
 document.getElementById('soundToggleBtn').addEventListener('click', toggleSound);
 document.getElementById('fullscreenToggleBtn').addEventListener('click', toggleFullscreen);
 
+// Instant zero-latency mobile touch dismiss for jumpscare
+const jumpscareEl = document.getElementById('jumpscareOverlay');
+if (jumpscareEl) {
+  jumpscareEl.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    dismissJumpscareAndRevealPoster();
+  });
+}
+
 // Start audio context upon first page interaction anywhere
 document.addEventListener('click', () => {
   if (state.soundEnabled && !state.droneGain) {
